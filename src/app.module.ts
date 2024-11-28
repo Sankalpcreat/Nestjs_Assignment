@@ -1,6 +1,10 @@
 import { Module } from "@nestjs/common";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
+
+import { ConfigModule, ConfigService } from "@nestjs/config";
+import { TypeOrmModule } from "@nestjs/typeorm";
+
 import { AuthModule } from "./auth/auth.module";
 import { UsersModule } from "./users/users.module";
 import { QrModule } from "./qr/qr.module";
@@ -9,31 +13,35 @@ import { AnalyticsModule } from "./analytics/analytics.module";
 
 @Module({
   imports: [
+    // Load environment variables
     ConfigModule.forRoot({
       isGlobal: true,
     }),
 
+    // TypeORM configuration
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
         type: "mysql",
         host: configService.get<string>("DB_HOST"),
-        port: configService.get<number>("DB_PORT"),
+        port: configService.get<number>("DB_PORT") || 3306,
         username: configService.get<string>("DB_USERNAME"),
         password: configService.get<string>("DB_PASSWORD"),
         database: configService.get<string>("DB_NAME"),
         entities: [__dirname + "/**/*.entity{.ts,.js}"],
-        synchronize: true,
+        synchronize: true, // Set to false in production
       }),
     }),
+
+    // Import application modules
     AuthModule,
     UsersModule,
     QrModule,
     EventModule,
     AnalyticsModule,
   ],
-  controllers: [],
-  providers: [],
+  controllers: [AppController],
+  providers: [AppService],
 })
 export class AppModule {}
