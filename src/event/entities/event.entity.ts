@@ -4,15 +4,18 @@ import {
   Column,
   CreateDateColumn,
   ManyToOne,
+  Index,
 } from "typeorm";
 import { QrCode } from "../../qr/entities/qr.entity";
 
 @Entity("events")
+@Index(["qrCode", "timestamp"])
+@Index(["qrCode", "ipAddress"])
 export class Event {
   @PrimaryGeneratedColumn("uuid")
   id: string;
 
-  @ManyToOne(() => QrCode, (qrCode) => qrCode.events, { onDelete: "CASCADE" })
+  @ManyToOne(() => QrCode, (qrCode) => qrCode.events)
   qrCode: QrCode;
 
   @CreateDateColumn()
