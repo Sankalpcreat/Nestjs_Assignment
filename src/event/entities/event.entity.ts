@@ -7,41 +7,46 @@ import {
   Index,
 } from "typeorm";
 import { QrCode } from "../../qr/entities/qr.entity";
+import { ApiProperty } from "@nestjs/swagger";
 
 @Entity("events")
 @Index(["qrCode", "timestamp"])
-@Index(["qrCode", "ipAddress"])
 export class Event {
+  @ApiProperty({ example: "uuid-v4-string", description: "Unique event ID" })
   @PrimaryGeneratedColumn("uuid")
   id: string;
 
-  @ManyToOne(() => QrCode, (qrCode) => qrCode.events)
+  @ApiProperty({ description: "Associated QR code" })
+  @ManyToOne(() => QrCode, (qrCode) => qrCode.events, { onDelete: "CASCADE" })
   qrCode: QrCode;
 
+  @ApiProperty({ description: "Timestamp of the event" })
   @CreateDateColumn()
   timestamp: Date;
 
+  @ApiProperty({
+    example: "New York, USA",
+    description: "Location of the event",
+  })
   @Column({ nullable: true })
   location: string;
 
+  @ApiProperty({ example: "Mobile", description: "Device type" })
   @Column({ nullable: true })
   deviceType: string;
 
-  @Column({ nullable: true })
-  browser: string;
-
-  @Column({ nullable: true })
-  operatingSystem: string;
-
+  @ApiProperty({ example: "Mozilla/5.0...", description: "User agent string" })
   @Column({ nullable: true })
   userAgent: string;
 
+  @ApiProperty({ example: "192.168.1.1", description: "IP address" })
   @Column({ nullable: true })
   ipAddress: string;
 
+  @ApiProperty({
+    example: "https://example.com",
+    description: "URL at the time of the event",
+  })
   @Column()
   urlAtTimestamp: string;
-
-  @Column({ type: "json", nullable: true })
-  metadata: Record<string, any>;
 }
