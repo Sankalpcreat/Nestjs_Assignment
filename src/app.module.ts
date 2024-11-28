@@ -13,12 +13,10 @@ import { AnalyticsModule } from "./analytics/analytics.module";
 
 @Module({
   imports: [
-    // Load environment variables
     ConfigModule.forRoot({
       isGlobal: true,
     }),
 
-    // TypeORM configuration
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
@@ -30,11 +28,10 @@ import { AnalyticsModule } from "./analytics/analytics.module";
         password: configService.get<string>("DB_PASSWORD"),
         database: configService.get<string>("DB_NAME"),
         entities: [__dirname + "/**/*.entity{.ts,.js}"],
-        synchronize: true, // Set to false in production
+        synchronize: true,
       }),
     }),
 
-    // Import application modules
     AuthModule,
     UsersModule,
     QrModule,
