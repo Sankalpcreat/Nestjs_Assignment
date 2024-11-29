@@ -1,100 +1,187 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+QR Code Management and Analytics Platform
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Project Overview
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+This project is a comprehensive QR Code Management and Analytics Platform built with NestJS, designed to generate both static and dynamic QR codes. It provides functionalities for:
+ • User Authentication: Secure registration and login using JWT.
+ • QR Code Generation:
+ • Static QR Codes: Encode a fixed URL.
+ • Dynamic QR Codes: Redirect to a URL that can be updated after creation.
+ • Event Tracking: Track scans of QR codes, capturing data such as location, device type, user agent, and IP address.
+ • Analytics:
+ • View total scans, unique users, scans over time, geographic distribution, and device statistics.
+ • AI Integration:
+ • Anomaly Detection: Identify suspicious or anomalous scan patterns.
+ • Summary Reports: Generate natural language summaries of analytics data using OpenAI’s GPT models.
+ • Security and Scalability:
+ • Implemented rate limiting to prevent abuse.
+ • Optimized database performance with indexing.
+ • Environment variables managed securely.
+ • Prepared for high traffic with caching and horizontal scaling considerations.
 
-## Description
+  Table of Contents
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+ • Project Overview
+ • Features
+ • Architecture
+ • Setup Instructions
+ • Prerequisites
+ • Installation
+ • Environment Variables
+ • Database Setup
+ • Running the Application
+ • Testing
+ • Dependencies
+ • Scripts
+ • API Documentation
+ • Contributing
+ • License
 
-## Project setup
+  Features
 
-```bash
-$ npm install
-```
+ • User Authentication and Authorization
+ • Secure user registration and login with JWT tokens.
+ • Role-based access control (if applicable).
+ • QR Code Management
+ • Generate static and dynamic QR codes.
+ • Update dynamic QR codes to redirect to new URLs.
+ • Retrieve a list of user’s QR codes.
+ • Event Tracking
+ • Track scans of QR codes.
+ • Store event data: timestamp, location, device type, user agent, and IP address.
+ • Analytics and Reporting
+ • View comprehensive analytics for each QR code.
+ • AI-powered anomaly detection to identify suspicious activities.
+ • Generate natural language summary reports using OpenAI’s GPT models.
+ • Security and Scalability
+ • Rate limiting to protect against DDoS attacks and abuse.
+ • Secure password storage with bcrypt.
+ • Database indexing for optimized performance.
+ • Environment variable management with @nestjs/config.
+ • Caching with Redis for high performance.
 
-## Compile and run the project
+  Architecture
 
-```bash
-# development
-$ npm run start
+The application follows a modular architecture provided by NestJS, promoting scalability and maintainability. Key modules include:
+ • AuthModule: Handles user authentication and authorization.
+ • UsersModule: Manages user data.
+ • QrModule: Responsible for QR code generation and management.
+ • EventModule: Tracks QR code scan events.
+ • AnalyticsModule: Provides analytics data and AI integrations.
 
-# watch mode
-$ npm run start:dev
+  Setup Instructions
 
-# production mode
-$ npm run start:prod
-```
+Prerequisites
 
-## Run tests
+Ensure you have the following installed on your machine:
+ • Node.js: Version 14.x or higher
+ • npm: Version 6.x or higher
+ • MySQL: Version 5.7 or higher
+ • Redis: For caching and queuing
+ • Git: Version control system
 
-```bash
-# unit tests
-$ npm run test
+Installation
 
-# e2e tests
-$ npm run test:e2e
+ 1. Clone the Repository
+git clone <https://github.com/Sankalpcreat/Nestjs_Assignment.git>
+cd Nestjs_Assignment
 
-# test coverage
-$ npm run test:cov
-```
+ 2. Install Dependencies
+  npm install
 
-## Deployment
+  Environment Variables
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+  Create a .env file in the root directory of the project and add the following environment variables:
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+# Application
 
-```bash
-$ npm install -g mau
-$ mau deploy
-```
+NODE_ENV=development
+PORT=3000
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+# Database
 
-## Resources
+DB_HOST=localhost
+DB_PORT=3306
+DB_USERNAME=your_db_username
+DB_PASSWORD=your_db_password
+DB_NAME=your_db_name
 
-Check out a few resources that may come in handy when working with NestJS:
+# JWT
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+JWT_SECRET=your_jwt_secret
+JWT_EXPIRES_IN=3600s
 
-## Support
+# Redis
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+REDIS_HOST=localhost
+REDIS_PORT=6379
 
-## Stay in touch
+# OpenAI API Key
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+OPENAI_API_KEY=your_openai_api_key
 
-## License
+# Rate Limiting (optional)
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
-npm run lint --fix
+THROTTLE_TTL=60
+THROTTLE_LIMIT=10
+
+Running the Application
+
+Start the NestJS application:
+npm run start:dev
+
+Testing
+
+Unit Tests
+
+Run unit tests:
+npm run test
+
+End-to-End (E2E) Tests
+
+Run integration tests:
+npm run test:e2e
+
+Dependencies
+
+Key dependencies used in this project:
+ • NestJS Framework: @nestjs/core, @nestjs/common, @nestjs/typeorm
+ • Authentication: @nestjs/passport, passport, passport-jwt, bcrypt
+ • Database: typeorm, mysql2
+ • Validation: class-validator, class-transformer
+ • Caching and Queuing: @nestjs/bull, bull, redis, cache-manager
+ • QR Code Generation: qrcode
+ • OpenAI Integration: openai
+ • Statistics: simple-statistics
+ • Rate Limiting: @nestjs/throttler
+ • API Documentation: @nestjs/swagger, swagger-ui-express
+
+API Documentation
+
+The application uses Swagger for API documentation, which can be accessed at:
+<http://localhost:3000/api>
+nsuring Comprehensive Swagger Documentation
+
+To ensure that the Swagger documentation is comprehensive:
+ • Use Decorators
+ • Apply @ApiTags, @ApiOperation, @ApiResponse, and @ApiBearerAuth decorators to your controllers and methods.
+  @ApiTags('QR Codes')
+@ApiBearerAuth('access-token')
+@UseGuards(JwtAuthGuard)
+@Controller('qr')
+export class QrController {
+
+}
+Document DTOs
+ • Use @ApiProperty and related decorators to document your Data Transfer Objects (DTOs).
+  export class CreateStaticQrDto {
+  @ApiProperty({ description: 'URL to encode in the QR code' })
+  @IsNotEmpty()
+  @IsString()
+  @IsUrl()
+  url: string;
+
+  @ApiPropertyOptional({ description: 'Additional metadata' })
+  @IsOptional()
+  metadata?: Record<string, any>;
+}
