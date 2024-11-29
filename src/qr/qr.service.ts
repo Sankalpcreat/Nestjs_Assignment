@@ -4,7 +4,7 @@ import {
   ForbiddenException,
 } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm/index";
+import { Repository } from "typeorm";
 import { QrCode } from "./entities/qr.entity";
 import { CreateStaticQrDto } from "./dto/create-static-qr.dto";
 import { CreateDynamicQrDto } from "./dto/create-dynamic-qr.dto";
@@ -16,9 +16,10 @@ import * as QRCode from "qrcode";
 export class QrService {
   constructor(
     @InjectRepository(QrCode)
-    private qrRepository: Repository<QrCode>,
+    private readonly qrRepository: Repository<QrCode>,
   ) {}
 
+  // AI Integration: Optimize QR Code Generation
   async createStaticQr(
     createStaticQrDto: CreateStaticQrDto,
     owner: User,
@@ -32,7 +33,13 @@ export class QrService {
 
     await this.qrRepository.save(qrCode);
 
-    const qrImage = await QRCode.toDataURL(createStaticQrDto.url);
+    const errorCorrectionLevel = this.getErrorCorrectionLevel(
+      createStaticQrDto.url,
+    );
+
+    const qrImage = await QRCode.toDataURL(createStaticQrDto.url, {
+      errorCorrectionLevel,
+    });
     return qrImage;
   }
 
@@ -54,12 +61,32 @@ export class QrService {
 
     await this.qrRepository.save(qrCode);
 
-    const qrImage = await QRCode.toDataURL(redirectUrl);
+    const errorCorrectionLevel = this.getErrorCorrectionLevel(redirectUrl);
+
+    const qrImage = await QRCode.toDataURL(redirectUrl, {
+      errorCorrectionLevel,
+    });
     return { qrImage, dynamicQrId };
   }
-  generateDynamicQrId(): string {
-    // Implement a method to generate a unique ID for dynamic QR codes
-    return "unique-dynamic-id";
+
+  private generateDynamicQrId(): string {
+    return Math.random().toString(36).substr(2, 9);
+  }
+
+  private getErrorCorrectionLevel(
+    data: string,
+  ): QRCode.QRCodeErrorCorrectionLevel {
+    const length = data.length;
+
+    if (length < 50) {
+      return "L"; // Low error correction
+    } else if (length < 100) {
+      return "M"; // Medium error correction
+    } else if (length < 200) {
+      return "Q"; // Quartile error correction
+    } else {
+      return "H"; // High error correction
+    }
   }
 
   async updateDynamicQr(
@@ -92,10 +119,6 @@ export class QrService {
 
   async getUserQrCodes(userId: string): Promise<QrCode[]> {
     return this.qrRepository.find({ where: { owner: { id: userId } } });
-  }
-
-  private generateDynamicQrId(): string {
-    return Math.random().toString(36).substr(2, 9);
   }
 
   async getRedirectUrl(dynamicQrId: string): Promise<string> {

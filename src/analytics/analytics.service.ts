@@ -1,17 +1,32 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import {
+  Injectable,
+  NotFoundException,
+  ForbiddenException,
+} from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { QrCode } from "../qr/entities/qr.entity";
 import { Repository } from "typeorm";
 import { Event } from "../event/entities/event.entity";
+import { ConfigService } from "@nestjs/config";
+import { Configuration, OpenAIApi } from "openai";
+import * as ss from "simple-statistics";
 
 @Injectable()
 export class AnalyticsService {
+  private openai: OpenAIApi;
+
   constructor(
     @InjectRepository(QrCode)
     private readonly qrRepository: Repository<QrCode>,
     @InjectRepository(Event)
     private readonly eventRepository: Repository<Event>,
-  ) {}
+    private readonly configService: ConfigService,
+  ) {
+    const configuration = new Configuration({
+      apiKey: this.configService.get<string>("OPENAI_API_KEY"),
+    });
+    this.openai = new OpenAIApi(configuration);
+  }
 
   async getAnalytics(
     qrId: string,
@@ -21,11 +36,18 @@ export class AnalyticsService {
   ) {
     // Verify QR code ownership
     const qrCode = await this.qrRepository.findOne({
-      where: { id: qrId, owner: { id: userId } },
+      where: { id: qrId },
+      relations: ["owner"],
     });
 
     if (!qrCode) {
       throw new NotFoundException("QR Code not found");
+    }
+
+    if (qrCode.owner.id !== userId) {
+      throw new ForbiddenException(
+        "You do not have permission to access this QR code",
+      );
     }
 
     // Build event query with optional date filters
@@ -81,5 +103,85 @@ export class AnalyticsService {
       geographicDistribution,
       deviceStats,
     };
+  }
+
+  // AI Integration: Anomaly Detection
+  async detectAnomalies(qrId: string, userId: string) {
+    // Verify QR code ownership
+    const qrCode = await this.qrRepository.findOne({
+      where: { id: qrId },
+      relations: ["owner"],
+    });
+
+    if (!qrCode) {
+      throw new NotFoundException("QR Code not found");
+    }
+
+    if (qrCode.owner.id !== userId) {
+      throw new ForbiddenException(
+        "You do not have permission to access this QR code",
+      );
+    }
+
+    // Fetch events
+    const events = await this.eventRepository.find({
+      where: { qrCode: { id: qrId } },
+    });
+
+    // Prepare data for anomaly detection
+    const timestamps = events.map((event) => event.timestamp.getTime());
+    const intervals = timestamps
+      .sort((a, b) => a - b)
+      .map((time, index, array) => {
+        if (index === 0) return 0;
+        return time - array[index - 1];
+      })
+      .slice(1); // Remove the first zero
+
+    // Calculate mean and standard deviation
+    const meanInterval = ss.mean(intervals);
+    const sdInterval = ss.standardDeviation(intervals);
+
+    const anomalies = [];
+    intervals.forEach((interval, index) => {
+      const zScore = (interval - meanInterval) / sdInterval;
+      if (Math.abs(zScore) > 2) {
+        anomalies.push(events[index + 1]); // Index offset due to slice(1)
+      }
+    });
+
+    return {
+      anomalies,
+      totalEvents: events.length,
+    };
+  }
+
+  // AI Integration: Generate Summary Reports
+  async generateSummaryReport(qrId: string, userId: string): Promise<string> {
+    const analyticsData = await this.getAnalytics(qrId, userId);
+
+    // Prepare prompt for OpenAI
+    const prompt = `
+    Generate a concise summary report based on the following analytics data:
+
+    Total Scans: ${analyticsData.totalScans}
+    Unique Users: ${analyticsData.uniqueUsers}
+    Scans Over Time: ${JSON.stringify(analyticsData.scansOverTime)}
+    Geographic Distribution: ${JSON.stringify(analyticsData.geographicDistribution)}
+    Device Statistics: ${JSON.stringify(analyticsData.deviceStats)}
+
+    The report should be in natural language, highlighting key insights.
+    `;
+
+    // Call OpenAI API
+    const response = await this.openai.createCompletion({
+      model: "gpt-4o",
+      prompt: prompt,
+      max_tokens: 500,
+      temperature: 0.7,
+    });
+
+    const summary = response.data.choices[0].text.trim();
+    return summary;
   }
 }

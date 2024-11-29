@@ -44,4 +44,30 @@ export class AnalyticsController {
       endDate,
     );
   }
+
+  @ApiOperation({ summary: "Detect anomalies for a QR code" })
+  @ApiResponse({
+    status: 200,
+    description: "Anomaly detection completed successfully.",
+  })
+  @ApiResponse({ status: 404, description: "QR code not found." })
+  @Get(":id/anomalies")
+  async getAnomalies(@Param("id") id: string, @Request() req) {
+    return await this.analyticsService.detectAnomalies(id, req.user.id);
+  }
+
+  @ApiOperation({ summary: "Generate summary report for a QR code" })
+  @ApiResponse({
+    status: 200,
+    description: "Summary report generated successfully.",
+  })
+  @ApiResponse({ status: 404, description: "QR code not found." })
+  @Get(":id/summary")
+  async getSummaryReport(@Param("id") id: string, @Request() req) {
+    const summary = await this.analyticsService.generateSummaryReport(
+      id,
+      req.user.id,
+    );
+    return { summary };
+  }
 }
