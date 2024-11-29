@@ -1,6 +1,6 @@
-QR Code Management and Analytics Platform
+# QR Code Management and Analytics Platform
 
-Project Overview
+# Project Overview
 
 This project is a comprehensive QR Code Management and Analytics Platform built with NestJS, designed to generate both static and dynamic QR codes. It provides functionalities for:
  • User Authentication: Secure registration and login using JWT.
@@ -19,7 +19,7 @@ This project is a comprehensive QR Code Management and Analytics Platform built 
  • Environment variables managed securely.
  • Prepared for high traffic with caching and horizontal scaling considerations.
 
-  Table of Contents
+  # Table of Contents
 
  • Project Overview
  • Features
@@ -37,7 +37,7 @@ This project is a comprehensive QR Code Management and Analytics Platform built 
  • Contributing
  • License
 
-  Features
+  # Features
 
  • User Authentication and Authorization
  • Secure user registration and login with JWT tokens.
@@ -60,7 +60,7 @@ This project is a comprehensive QR Code Management and Analytics Platform built 
  • Environment variable management with @nestjs/config.
  • Caching with Redis for high performance.
 
-  Architecture
+ # Architecture
 
 The application follows a modular architecture provided by NestJS, promoting scalability and maintainability. Key modules include:
  • AuthModule: Handles user authentication and authorization.
@@ -69,7 +69,7 @@ The application follows a modular architecture provided by NestJS, promoting sca
  • EventModule: Tracks QR code scan events.
  • AnalyticsModule: Provides analytics data and AI integrations.
 
-  Setup Instructions
+# Setup Instructions
 
 Prerequisites
 
@@ -80,7 +80,7 @@ Ensure you have the following installed on your machine:
  • Redis: For caching and queuing
  • Git: Version control system
 
-Installation
+# Installation
 
  1. Clone the Repository
 git clone <https://github.com/Sankalpcreat/Nestjs_Assignment.git>
@@ -125,7 +125,7 @@ OPENAI_API_KEY=your_openai_api_key
 THROTTLE_TTL=60
 THROTTLE_LIMIT=10
 
-Running the Application
+# Running the Application
 
 Start the NestJS application:
 npm run start:dev
@@ -142,7 +142,7 @@ End-to-End (E2E) Tests
 Run integration tests:
 npm run test:e2e
 
-Dependencies
+# Dependencies
 
 Key dependencies used in this project:
  • NestJS Framework: @nestjs/core, @nestjs/common, @nestjs/typeorm
@@ -156,7 +156,7 @@ Key dependencies used in this project:
  • Rate Limiting: @nestjs/throttler
  • API Documentation: @nestjs/swagger, swagger-ui-express
 
-API Documentation
+# API Documentation
 
 The application uses Swagger for API documentation, which can be accessed at:
 <http://localhost:3000/api>
