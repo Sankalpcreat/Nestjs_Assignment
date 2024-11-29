@@ -1,16 +1,25 @@
 import { NestFactory } from "@nestjs/core";
 import { AppModule } from "./app.module";
+import { AllExceptionsFilter } from "./common/filters/http-exception.filter";
 import { SwaggerModule, DocumentBuilder } from "@nestjs/swagger";
 import { ValidationPipe } from "@nestjs/common";
+import { ThrottlerGuard } from "@nestjs/throttler";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // Enable global validation pipe
-  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true,
+    }),
+  );
 
-  // Enable CORS if needed
   app.enableCors();
+
+  app.useGlobalFilters(new AllExceptionsFilter());
+  app.useGlobalGuards(new ThrottlerGuard());
 
   // Swagger configuration
   const config = new DocumentBuilder()
@@ -26,7 +35,7 @@ async function bootstrap() {
         description: "Enter JWT token",
         in: "header",
       },
-      "access-token", // This name should match the security name below
+      "access-token",
     )
     .build();
 

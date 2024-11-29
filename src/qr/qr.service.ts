@@ -57,6 +57,10 @@ export class QrService {
     const qrImage = await QRCode.toDataURL(redirectUrl);
     return { qrImage, dynamicQrId };
   }
+  generateDynamicQrId(): string {
+    // Implement a method to generate a unique ID for dynamic QR codes
+    return "unique-dynamic-id";
+  }
 
   async updateDynamicQr(
     id: string,
@@ -77,7 +81,6 @@ export class QrService {
       );
     }
 
-    // Update URL and add to history
     qrCode.urlHistory = qrCode.urlHistory || [];
     qrCode.urlHistory.push({ url: updateQrDto.url, updatedAt: new Date() });
     qrCode.url = updateQrDto.url;
@@ -95,7 +98,6 @@ export class QrService {
     return Math.random().toString(36).substr(2, 9);
   }
 
-  // Additional method to handle redirection for dynamic QR codes
   async getRedirectUrl(dynamicQrId: string): Promise<string> {
     const qrCode = await this.qrRepository.findOne({ where: { dynamicQrId } });
     if (!qrCode) {

@@ -130,7 +130,11 @@ export class QrController {
       const url = await this.qrService.getRedirectUrl(id);
       return res.redirect(url);
     } catch (error) {
-      throw new NotFoundException("QR Code not found");
+      if (error instanceof NotFoundException) {
+        res.status(404).json({ message: "QR Code not found" });
+      } else {
+        res.status(500).json({ message: "Internal server error" });
+      }
     }
   }
 }
